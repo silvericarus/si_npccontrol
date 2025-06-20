@@ -6,3 +6,8 @@ FiveM Script for custom control over NPC density (No-NPC areas, areas with a cer
   <img src="https://badge.eu.org/github/license/silvericarus/si_npccontrol"/>
   <!--<img src="https://badge.eu.org/static/tag/5c5c5c/v1.0/FF6F00?icon=tag&opacity=0.8"/>-->
 </p>
+
+## Features
+* You can create NPCs-free zones, setting their location and size.
+* You can create zones where a certain amount of NPCs of a customizable group spawn, the zone can be set to any location, size, and state of the NPCs.
+* More features incoming soon.
