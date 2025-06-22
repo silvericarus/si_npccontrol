@@ -1,5 +1,9 @@
 Config = {}
 
+Config.notificationSystem = "qb" -- Options: "qb", "ox", "esx", "custom"
+
+Config.enviromentEventsActive = true
+
 Config.NoNPCZones = {
 	["weazel_offices"] = {
 		coords = vector3(333.45, 63.51, 20.35),

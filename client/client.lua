@@ -44,3 +44,7 @@ AddEventHandler('onResourceStart', function(resourceName)
         end)
     end    
 end)
+
+RegisterNetEvent('client:startEnviromentEvent', function(objects)
+    print("Starting environment event with objects: " .. json.encode(objects))
+end)
