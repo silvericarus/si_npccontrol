@@ -10,14 +10,12 @@ local function AddNPCMeetingZone(zoneCoords, zoneRadius, npcAmount, npcGroup)
             Citizen.Wait(100)
         end
         local npcPed = CreatePed(4, npcModel, zoneCoords.x + math.random(-zoneRadius, zoneRadius), zoneCoords.y + math.random(-zoneRadius, zoneRadius), zoneCoords.z, 0.0, true, false)
-        SetEntityAsMissionEntity(npcPed, true, true)
-        SetBlockingOfNonTemporaryEvents(npcPed, true)
-        SetPedFleeAttributes(npcPed, 0, false)
-        SetPedCombatAttributes(npcPed, 17, npcGroup.pacific) -- Prevent NPCs from engaging in combat
-        SetPedCanRagdoll(npcPed, true) -- Prevent NPCs from ragdolling
-        SetPedKeepTask(npcPed, true) -- Keep NPCs in their task
-        TaskStartScenarioInPlace(npcPed, "WORLD_HUMAN_STAND_MOBILE", 0, true) -- Make NPCs stand still
-        SetModelAsNoLongerNeeded(npcModel) -- Release the model
+		SetEntityAsMissionEntity(npcPed, true, true)
+		SetBlockingOfNonTemporaryEvents(npcPed, false)
+		SetPedFleeAttributes(npcPed, 0, true)
+		SetPedCombatAttributes(npcPed, 17, npcGroup.pacific) -- Prevent NPCs from engaging in combat
+		TaskWanderStandard(npcPed, 10.0, 10)
+		SetModelAsNoLongerNeeded(npcModel) -- Release the model
     end
 end
 
