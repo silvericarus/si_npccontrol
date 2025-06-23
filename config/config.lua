@@ -2,7 +2,7 @@ Config = {}
 
 Config.notificationSystem = "qb" -- Options: "qb", "ox", "esx", "custom"
 
-Config.enviromentEventsActive = true
+Config.environmentEventsActive = true
 
 Config.NoNPCZones = {
 	["weazel_offices"] = {

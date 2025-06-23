@@ -1,6 +1,6 @@
-EnviromentEvents = {}
+EnvironmentEvents = {}
 
-EnviromentEvents.events = {
+EnvironmentEvents.events = {
 	["carcrash"] = {
 		["description"] = "A car crash has occurred nearby.",
 		["cooldown"] = 600, -- Cooldown in seconds

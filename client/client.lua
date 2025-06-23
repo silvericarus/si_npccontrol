@@ -9,15 +9,16 @@ local function AddNPCMeetingZone(zoneCoords, zoneRadius, npcAmount, npcGroup)
         while not HasModelLoaded(npcModel) do
             Citizen.Wait(100)
         end
-        local npcPed = CreatePed(4, npcModel, zoneCoords.x + math.random(-zoneRadius, zoneRadius), zoneCoords.y + math.random(-zoneRadius, zoneRadius), zoneCoords.z, 0.0, true, false)
+        local npcPed = CreatePed(4, npcModel, zoneCoords.x + math.random(-zoneRadius, zoneRadius),
+            zoneCoords.y + math.random(-zoneRadius, zoneRadius), zoneCoords.z, 0.0, true, false)
         SetEntityAsMissionEntity(npcPed, true, true)
         SetBlockingOfNonTemporaryEvents(npcPed, true)
         SetPedFleeAttributes(npcPed, 0, false)
-        SetPedCombatAttributes(npcPed, 17, npcGroup.pacific) -- Prevent NPCs from engaging in combat
-        SetPedCanRagdoll(npcPed, true) -- Prevent NPCs from ragdolling
-        SetPedKeepTask(npcPed, true) -- Keep NPCs in their task
+        SetPedCombatAttributes(npcPed, 17, npcGroup.pacific)                  -- Prevent NPCs from engaging in combat
+        SetPedCanRagdoll(npcPed, true)                                        -- Prevent NPCs from ragdolling
+        SetPedKeepTask(npcPed, true)                                          -- Keep NPCs in their task
         TaskStartScenarioInPlace(npcPed, "WORLD_HUMAN_STAND_MOBILE", 0, true) -- Make NPCs stand still
-        SetModelAsNoLongerNeeded(npcModel) -- Release the model
+        SetModelAsNoLongerNeeded(npcModel)                                    -- Release the model
     end
 end
 
@@ -34,17 +35,65 @@ AddEventHandler('onResourceStart', function(resourceName)
             for zoneName, zoneData in pairs(Config.NPCMeetingZones) do
                 local zoneCoords = zoneData.coords
                 local zoneRadius = zoneData.radius
-                local npcAmount = zoneData.amount or 1 -- Default to 1 if not specified
-                local npcGroup = zoneData.npcGroup -- Get the NPC group from the config
+                local npcAmount = zoneData.amount or 1   -- Default to 1 if not specified
+                local npcGroup = zoneData.npcGroup       -- Get the NPC group from the config
                 local npcGroupData = NPCGroups[npcGroup] -- Get the NPC group data from the shared config
                 -- Create NPCs in the meeting zone
                 AddNPCMeetingZone(zoneCoords, zoneRadius, npcAmount, npcGroupData)
                 Citizen.Wait(0) -- Wait to avoid performance issues
             end
         end)
-    end    
+    end
 end)
 
-RegisterNetEvent('client:startEnviromentEvent', function(objects)
-    print("Starting environment event with objects: " .. json.encode(objects))
+RegisterNetEvent('client:startenviroevent', function(name, description, peds, vehicles)
+    print("Starting " .. name .. " environment event...")
+    local playerPed = PlayerPedId()
+    local playerCoords = GetEntityCoords(playerPed)
+
+    for i, model in ipairs(vehicles) do
+        print("Spawning vehicle: " .. model)
+        RequestModel(model)
+        while not HasModelLoaded(model) do
+            Citizen.Wait(10)
+        end
+        local vehicle = CreateVehicle(model, playerCoords.x + math.random(-8, 8), playerCoords.y + math.random(-8, 8),
+            playerCoords.z, math.random(0, 360), true, false)
+        SetVehicleOnGroundProperly(vehicle)
+        if model ~= 'ambulance' and model ~= 'police' then
+            SetVehicleDoorsLocked(vehicle, 8)
+            SetVehicleDoorsLockedForAllPlayers(vehicle, true)
+            SetVehicleBodyHealth(vehicle, 10)
+            SetVehicleEngineHealth(vehicle, 10)
+            SetVehicleUndriveable(vehicle, true)
+            SetVehiclePetrolTankHealth(vehicle, 0)
+            SetVehicleAlarm(vehicle, true)
+            StartVehicleAlarm(vehicle)
+        end
+        SetModelAsNoLongerNeeded(model)
+    end
+
+    for i, model in ipairs(peds) do
+        print("Spawning NPC: " .. model)
+        RequestModel(model)
+        while not HasModelLoaded(model) do
+            Citizen.Wait(10)
+        end
+        local npcPed = CreatePed(4, model, playerCoords.x + math.random(-8, 8), playerCoords.y + math.random(-8, 8),
+            playerCoords.z, math.random(0, 360), true, false)
+        SetEntityAsMissionEntity(npcPed, true, true)
+        SetBlockingOfNonTemporaryEvents(npcPed, false)
+        SetPedFleeAttributes(npcPed, 0, true)
+        SetPedCombatAttributes(npcPed, 17, false)
+        SetPedCanRagdoll(npcPed, true)
+        if string.find(model, 'paramedic') or string.find(model, 'doctor') then
+            TaskStartScenarioInPlace(npcPed, "WORLD_HUMAN_CLIPBOARD", 0, true)
+        else if string.find(model,'police') then
+            TaskStartScenarioInPlace(npcPed, "WORLD_HUMAN_COP_IDLES", 0, true)
+        else
+            TaskStartScenarioInPlace(npcPed, "WORLD_HUMAN_STAND_MOBILE", 0, true)  
+        end
+        SetModelAsNoLongerNeeded(model)
+        end
+    end
 end)
